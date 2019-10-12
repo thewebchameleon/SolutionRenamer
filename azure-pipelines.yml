@@ -16,9 +16,8 @@ steps:
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK'
   inputs:
-    packageType: sdk
-    version: 3.0.0
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+    version: 3.x
+    includePreviewVersions: true
 
 - script: dotnet restore
   displayName: Restore

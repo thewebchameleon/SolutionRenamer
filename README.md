@@ -1,2 +1,4 @@
 # SolutionRenamer
-This tool can rename all contents of a zip file, used for renaming template projects.
+This tool opens an archive (.zip) and renames all files while creating a new archive to download. New projects are stored on the server for 1 day (configurable).
+
+Useful for easily cloning a template

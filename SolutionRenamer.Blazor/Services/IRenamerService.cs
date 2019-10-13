@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using SolutionRenamer.Blazor.Models;
+using System.Threading.Tasks;
 
-namespace SolutionRenamer.Blazor.Data
+namespace SolutionRenamer.Blazor.Services
 {
     public interface IRenamerService
     {

@@ -1,4 +1,4 @@
-﻿namespace SolutionRenamer.Blazor.Data
+﻿namespace SolutionRenamer.Blazor.Cache
 {
     public class CacheSettings
     {

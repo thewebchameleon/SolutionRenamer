@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SolutionRenamer.Blazor.Data
+namespace SolutionRenamer.Blazor.Cache
 {
     public interface ICacheProvider
     {

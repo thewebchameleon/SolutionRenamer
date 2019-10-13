@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SolutionRenamer.Blazor.Data
+namespace SolutionRenamer.Blazor.Models
 {
     public class UploadedFile
     {

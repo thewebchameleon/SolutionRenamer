@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SolutionRenamer.Blazor.Data;
-using System.Threading.Tasks;
+using SolutionRenamer.Blazor.Models;
+using SolutionRenamer.Blazor.Services;
 
 namespace SolutionRenamer.Blazor.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class FileController : Controller
     {
         private readonly IRenamerService _service;

@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Options;
+using SolutionRenamer.Blazor.Cache;
+using SolutionRenamer.Blazor.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +8,7 @@ using System.IO.Compression;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SolutionRenamer.Blazor.Data
+namespace SolutionRenamer.Blazor.Services
 {
     public class RenamerService : IRenamerService
     {
@@ -27,7 +29,7 @@ namespace SolutionRenamer.Blazor.Data
             {
                 var destinationStream = new MemoryStream();
                 await request.File.Data.CopyToAsync(destinationStream);
-                var processedFile = ProcessFile(destinationStream, request.KeywordReplacements);
+                var processedFile = ProcessZipFile(destinationStream, request.KeywordReplacements);
                 return processedFile;
             }
 
@@ -39,7 +41,7 @@ namespace SolutionRenamer.Blazor.Data
             if (request.SelectedProjectSource == SelectedProjectSourceEnum.UrlZip)
             {
                 var file = await GetZipUrlSource(request.ZipUrl);
-                var processedFile = ProcessFile(file, request.KeywordReplacements);
+                var processedFile = ProcessZipFile(file, request.KeywordReplacements);
 
                 return processedFile;
             }
@@ -78,7 +80,7 @@ namespace SolutionRenamer.Blazor.Data
             return await httpResponse.Content.ReadAsStreamAsync();
         }
 
-        private UploadedFile ProcessFile(Stream stream, List<KeywordReplacement> keywordReplacements)
+        private UploadedFile ProcessZipFile(Stream stream, List<KeywordReplacement> keywordReplacements)
         {
             using (var destinationStream = new MemoryStream())
             {

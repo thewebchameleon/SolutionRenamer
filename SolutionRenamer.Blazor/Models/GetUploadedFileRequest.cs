@@ -1,4 +1,4 @@
-﻿namespace SolutionRenamer.Blazor.Data
+﻿namespace SolutionRenamer.Blazor.Models
 {
     public class GetUploadedFileRequest
     {

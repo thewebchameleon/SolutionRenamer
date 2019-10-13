@@ -1,7 +1,7 @@
 ﻿using BlazorInputFile;
 using System.Collections.Generic;
 
-namespace SolutionRenamer.Blazor.Data
+namespace SolutionRenamer.Blazor.Models
 {
     public class CreateProjectRequest
     {

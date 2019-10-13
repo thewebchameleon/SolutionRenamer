@@ -23,7 +23,13 @@
 
     [Parameter]
     public TabPage ActivePage { get; set; }
+
     List<TabPage> Pages = new List<TabPage>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ActivePage = Pages.FirstOrDefault();
+    }
 
     internal void AddPage(TabPage tabPage)
     {

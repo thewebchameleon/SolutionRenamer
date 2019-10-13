@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using System;
 
-namespace SolutionRenamer.Blazor.Data
+namespace SolutionRenamer.Blazor.Cache
 {
     public class MemoryCacheProvider : ICacheProvider
     {

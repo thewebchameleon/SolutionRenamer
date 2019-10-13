@@ -8,21 +8,7 @@
             <p>This tool can rename all contents of a .zip file and package it conveniently for your next project.</p>
 
             <TabControl @bind-ActivePage="SelectedTabPage">
-                <TabPage Text="Url">
-                    <div class="form-group">
-                        <label for="urlZip">URL to source .zip</label>
-                        <input id="urlZip" type="text" class="form-control" placeholder="Enter URL" @bind="URL" />
-                        <small id="urlZipHelp" class="form-text text-muted">This must be a publicly available archive</small>
-                    </div>
-                </TabPage>
-                @*<TabPage Text="Git">
-                        <div class="form-group">
-                            <label for="urlGit">URL to source .git</label>
-                            <input id="urlGit" type="text" class="form-control" placeholder="Enter .git URL" @bind="GitURL" />
-                            <small id="urlGitHelp" class="form-text text-muted">This must be a publicly available repository</small>
-                        </div>
-                    </TabPage>*@
-                <TabPage Text="Upload">
+                <TabPage Text="Upload" Selected="true">
                     <div class="form-group">
                         <label for="zipFile">Upload a .zip file</label>
                         <div class="custom-file">
@@ -39,16 +25,29 @@
                                     <p class="text-danger"><strong>The file selected is not a valid .zip file</strong></p>
                                 }
                                 <p><strong>@SelectedFile.Name</strong> (@(SelectedFile.Size / 1000)KB)</p>
-                                <p>Last modified: @SelectedFile.LastModified.ToLongDateString()</p>
                                 <p>Content type: @SelectedFile.Type</p>
                             </div>
                         }
 
                     </div>
                 </TabPage>
+                <TabPage Text="Url">
+                    <div class="form-group">
+                        <label for="urlZip">URL to source .zip</label>
+                        <input id="urlZip" type="text" class="form-control" placeholder="Enter URL" @bind="URL" />
+                        <small id="urlZipHelp" class="form-text text-muted">This must be a publicly available archive</small>
+                    </div>
+                </TabPage>
+                @*<TabPage Text="Git">
+                        <div class="form-group">
+                            <label for="urlGit">URL to source .git</label>
+                            <input id="urlGit" type="text" class="form-control" placeholder="Enter .git URL" @bind="GitURL" />
+                            <small id="urlGitHelp" class="form-text text-muted">This must be a publicly available repository</small>
+                        </div>
+                    </TabPage>*@
             </TabControl>
 
-            <fieldset class="border p-4 mb-4">
+            <fieldset class="border py-2 px-4 mb-4">
                 <legend class="w-auto px-2">Keywords</legend>
 
                 <div class="form-row">
@@ -78,11 +77,12 @@
                 </div>
             </fieldset>
 
-
-            <div class="form-group mb-4">
-                <label>Project Name</label>
-                <input class="form-control" placeholder="Enter project name" @bind="@ProjectName" />
-            </div>
+            @if (!string.IsNullOrEmpty(ErrorText))
+            {
+                <div class="form-group mb-4">
+                    <p class="text-danger"><strong>@ErrorText</strong></p>
+                </div>
+            }
 
             @if (IsGeneratingLink)
             {
@@ -93,23 +93,14 @@
             }
             else if (CreateProjectResponse != null)
             {
-                <a class="btn btn-primary btn-block" href="/api/file/@CreateProjectResponse.Id">Download @ProjectName</a>
+                <a class="btn btn-primary btn-block" href="/file/@CreateProjectResponse.Id">Download</a>
                 <small class="form-text text-muted">This link will expire on @CreateProjectResponse.ExpiryDate.ToString()</small>
             }
             else
             {
-                if (IncorrectFileTypeUploaded)
-                {
-                    <button class="btn btn-primary btn-block" type="button" disabled>
-                        Create Project
-                    </button>
-                }
-                else
-                {
-                    <button class="btn btn-primary btn-block" type="button" @onclick="GenerateLink">
-                        Create Project
-                    </button>
-                }
+                <button class="btn btn-primary btn-block" type="button" @onclick="GenerateLink">
+                    Create Project
+                </button>
             }
 
         </div>
@@ -123,8 +114,6 @@
 
     public List<KeywordReplacement> KeywordReplacements;
 
-    public string ProjectName;
-
     bool IsGeneratingLink = false;
 
     bool GeneratedLink = false;
@@ -136,6 +125,8 @@
     IFileListEntry SelectedFile;
 
     bool IncorrectFileTypeUploaded = false;
+
+    string ErrorText;
 
     void HandleFileSelected(IFileListEntry[] files)
     {
@@ -158,9 +149,44 @@
 
     public async Task GenerateLink()
     {
-        IsGeneratingLink = true;
+        ErrorText = string.Empty;
+        if (KeywordReplacements.Any(k => string.IsNullOrEmpty(k.Keyword) || string.IsNullOrEmpty(k.ReplacementValue)))
+        {
+            ErrorText = "Please enter at least 1 keyword replacement";
+        }
 
         var selectedSource = GetSelectedSource(SelectedTabPage);
+
+        if (selectedSource == SelectedProjectSourceEnum.File)
+        {
+            if (SelectedFile == null)
+            {
+                ErrorText = "Please upload a file";
+            }
+            if (IncorrectFileTypeUploaded)
+            {
+                ErrorText = "Please upload a valid .zip file";
+            }
+        }
+
+        if (selectedSource == SelectedProjectSourceEnum.Git &&
+           string.IsNullOrEmpty(GitURL))
+        {
+            ErrorText = "Please enter a source Git URL";
+        }
+
+        if (selectedSource == SelectedProjectSourceEnum.UrlZip &&
+           string.IsNullOrEmpty(URL))
+        {
+            ErrorText = "Please enter a source .zip URL";
+        }
+
+        if (!string.IsNullOrEmpty(ErrorText))
+        {
+            return;
+        }
+
+        IsGeneratingLink = true;
 
         var response = await RenamerService.CreateProject(new CreateProjectRequest()
         {
